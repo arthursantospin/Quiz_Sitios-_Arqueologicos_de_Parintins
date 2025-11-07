@@ -94,9 +94,6 @@
 </div>
 
 <script>
-// ============================
-// DADOS DAS QUESTÕES
-// ============================
 const questions = [
   {
     tipo: "pergunta",
@@ -119,7 +116,7 @@ const questions = [
       "O estudo dos dinossauros que habitavam a ilha de Tupinambarana.",
       "Ciência que estuda vestígios deixados por povos antigos, como cerâmicas, ferramentas e construções. Em Parintins, ela investiga modos de vida indígenas anteriores à colonização."
     ],
-    resposta: 0,
+    resposta: 1,
     fundo: "imagens/fundo_arqueologia.jpg"
   },
   {
@@ -223,20 +220,19 @@ const questions = [
 let current = 0;
 let attempts = 0;
 
-// ============================
-// LÓGICA PRINCIPAL
-// ============================
 const questionEl = document.getElementById("question");
 const contentEl = document.getElementById("content");
 const nextBtn = document.getElementById("next-btn");
 
 function loadQuestion() {
   contentEl.innerHTML = "";
-  nextBtn.textContent = "Responder";
   const q = questions[current];
-
-  // muda fundo
   document.body.style.backgroundImage = q.fundo ? `url('${q.fundo}')` : "none";
+
+  // sempre reseta o botão
+  nextBtn.onclick = null;
+  nextBtn.disabled = false;
+  nextBtn.textContent = "Responder";
 
   if (q.tipo === "curiosidade") {
     questionEl.textContent = "Curiosidade:";
@@ -252,45 +248,55 @@ function loadQuestion() {
     }
     nextBtn.textContent = current === questions.length - 1 ? "Concluir" : "Próximo";
     nextBtn.onclick = nextQuestion;
+    return;
+  }
+
+  // perguntas normais
+  questionEl.textContent = q.texto;
+
+  if (q.alternativasImg) {
+    const imgContainer = document.createElement("div");
+    imgContainer.className = "img-options";
+    q.alternativasImg.forEach((path, i) => {
+      const img = document.createElement("img");
+      img.src = path;
+      img.onclick = () => checkAnswer(i);
+      imgContainer.appendChild(img);
+    });
+    contentEl.appendChild(imgContainer);
+    nextBtn.disabled = true;
   } else {
-    questionEl.textContent = q.texto;
-    if (q.alternativasImg) {
-      const imgContainer = document.createElement("div");
-      imgContainer.className = "img-options";
-      q.alternativasImg.forEach((path, i) => {
-        const img = document.createElement("img");
-        img.src = path;
-        img.onclick = () => checkAnswer(i);
-        imgContainer.appendChild(img);
-      });
-      contentEl.appendChild(imgContainer);
-      nextBtn.disabled = true;
-    } else {
-      const options = document.createElement("div");
-      options.className = "options";
-      q.alternativas.forEach((alt, i) => {
-        const label = document.createElement("label");
-        const input = document.createElement("input");
-        input.type = "radio";
-        input.name = "alt";
-        input.value = i;
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(" " + alt));
-        options.appendChild(label);
-      });
-      contentEl.appendChild(options);
-      nextBtn.onclick = () => {
-        const selected = document.querySelector("input[name='alt']:checked");
-        if (!selected) { alert("Selecione uma alternativa."); return; }
-        checkAnswer(parseInt(selected.value));
-      };
-    }
+    const options = document.createElement("div");
+    options.className = "options";
+    q.alternativas.forEach((alt, i) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "alt";
+      input.value = i;
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(" " + alt));
+      options.appendChild(label);
+    });
+    contentEl.appendChild(options);
+
+    nextBtn.onclick = () => {
+      const selected = document.querySelector("input[name='alt']:checked");
+      if (!selected) {
+        alert("Selecione uma alternativa.");
+        return;
+      }
+      checkAnswer(parseInt(selected.value));
+    };
   }
 }
 
 function checkAnswer(choice) {
   const q = questions[current];
-  if (q.resposta === null) { nextQuestion(); return; }
+  if (q.resposta === null) {
+    nextQuestion();
+    return;
+  }
   if (choice === q.resposta) {
     alert("✅ Resposta certa!");
     nextQuestion();
@@ -329,5 +335,3 @@ loadQuestion();
 </script>
 </body>
 </html>
-
-
