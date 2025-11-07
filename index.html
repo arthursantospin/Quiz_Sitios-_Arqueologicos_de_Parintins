@@ -248,22 +248,33 @@ function loadQuestion() {
   nextBtn.textContent = "Responder";
 
   if (q.tipo === "curiosidade") {
-    questionEl.textContent = "Curiosidade:";
-    const p = document.createElement("p");
-    p.textContent = q.texto;
-    contentEl.appendChild(p);
-    if (q.imagens) {
-      q.imagens.forEach(imgPath => {
-        const img = document.createElement("img");
-        img.src = imgPath;
-        contentEl.appendChild(img);
-      });
-    }
-    nextBtn.textContent = current === questions.length - 1 ? "Concluir" : "Próximo";
-    nextBtn.onclick = nextQuestion;
-    return;
+  questionEl.textContent = "Curiosidade:";
+
+  // cria o container centralizado
+  const curiosidadeDiv = document.createElement("div");
+  curiosidadeDiv.id = "curiosidade";
+
+  // texto da curiosidade
+  const p = document.createElement("p");
+  p.textContent = q.texto;
+  curiosidadeDiv.appendChild(p);
+
+  // adiciona imagens centralizadas
+  if (q.imagens) {
+    q.imagens.forEach(imgPath => {
+      const img = document.createElement("img");
+      img.src = imgPath;
+      curiosidadeDiv.appendChild(img);
+    });
   }
 
+  // insere o bloco no conteúdo
+  contentEl.appendChild(curiosidadeDiv);
+
+  nextBtn.textContent = current === questions.length - 1 ? "Concluir" : "Próximo";
+  nextBtn.onclick = nextQuestion;
+  return;
+}
   // perguntas normais
   questionEl.textContent = q.texto;
 
@@ -348,6 +359,7 @@ loadQuestion();
 </script>
 </body>
 </html>
+
 
 
 
