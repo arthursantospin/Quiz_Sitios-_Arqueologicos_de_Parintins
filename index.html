@@ -94,22 +94,28 @@
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(255,255,255,0.1);
   }
-  #curiosidade6 img {
-  width: 600px;       /* largura fixa */
-  height: 350px;      /* altura fixa */
-  object-fit: cover;  /* corta proporcionalmente sem distorcer */
-  border-radius: 12px;
-  margin: 10px;
-  box-shadow: 0 0 10px rgba(255,255,255,0.1);
-}
 
-/* Centralizar as duas imagens juntas */
-#curiosidade6 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
+  /* 👇 CSS ESPECIAL: apenas para a curiosidade 6 (Caprichoso e Garantido) */
+  #curiosidade6 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  #curiosidade6 .duas-imagens {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+  #curiosidade6 .duas-imagens img {
+    width: 300px; /* tamanho igual para as duas imagens */
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+  }
 </style>
 </head>
 <body>
@@ -258,39 +264,58 @@ function loadQuestion() {
   const q = questions[current];
   document.body.style.backgroundImage = q.fundo ? `url('${q.fundo}')` : "none";
 
-  // sempre reseta o botão
   nextBtn.onclick = null;
   nextBtn.disabled = false;
   nextBtn.textContent = "Responder";
 
   if (q.tipo === "curiosidade") {
-  questionEl.textContent = "Curiosidade:";
+    questionEl.textContent = "Curiosidade:";
 
-  // cria o container centralizado
-  const curiosidadeDiv = document.createElement("div");
-  curiosidadeDiv.id = "curiosidade";
+    // 👇 SEÇÃO ESPECIAL: curiosidade 6 (índice 14)
+    if (current === 14) {
+      const curiosidadeDiv = document.createElement("div");
+      curiosidadeDiv.id = "curiosidade6";
 
-  // texto da curiosidade
-  const p = document.createElement("p");
-  p.textContent = q.texto;
-  curiosidadeDiv.appendChild(p);
+      const p = document.createElement("p");
+      p.textContent = q.texto;
+      curiosidadeDiv.appendChild(p);
 
-  // adiciona imagens centralizadas
-  if (q.imagens) {
-    q.imagens.forEach(imgPath => {
-      const img = document.createElement("img");
-      img.src = imgPath;
-      curiosidadeDiv.appendChild(img);
-    });
+      const imgContainer = document.createElement("div");
+      imgContainer.className = "duas-imagens";
+
+      q.imagens.forEach(imgPath => {
+        const img = document.createElement("img");
+        img.src = imgPath;
+        imgContainer.appendChild(img);
+      });
+
+      curiosidadeDiv.appendChild(imgContainer);
+      contentEl.appendChild(curiosidadeDiv);
+    } else {
+      // todas as outras curiosidades
+      const curiosidadeDiv = document.createElement("div");
+      curiosidadeDiv.id = "curiosidade";
+
+      const p = document.createElement("p");
+      p.textContent = q.texto;
+      curiosidadeDiv.appendChild(p);
+
+      if (q.imagens) {
+        q.imagens.forEach(imgPath => {
+          const img = document.createElement("img");
+          img.src = imgPath;
+          curiosidadeDiv.appendChild(img);
+        });
+      }
+
+      contentEl.appendChild(curiosidadeDiv);
+    }
+
+    nextBtn.textContent = current === questions.length - 1 ? "Concluir" : "Próximo";
+    nextBtn.onclick = nextQuestion;
+    return;
   }
 
-  // insere o bloco no conteúdo
-  contentEl.appendChild(curiosidadeDiv);
-
-  nextBtn.textContent = current === questions.length - 1 ? "Concluir" : "Próximo";
-  nextBtn.onclick = nextQuestion;
-  return;
-}
   // perguntas normais
   questionEl.textContent = q.texto;
 
@@ -375,19 +400,3 @@ loadQuestion();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
